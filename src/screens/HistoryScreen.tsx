@@ -14,7 +14,7 @@ export default function HistoryScreen({ navigation }: IPageProps) {
         title="Calculation"
         onPress={() => navigation.navigate('Calculation')}
       />
-      <Text>History</Text>
+      <Text>History team</Text>
     </View>
   );
 }
