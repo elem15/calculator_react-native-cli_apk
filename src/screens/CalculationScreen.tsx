@@ -1,10 +1,21 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { ParamListBase } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-export default function CalculationScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
-  )
+interface IPageProps {
+  navigation: NativeStackNavigationProp<ParamListBase, 'History'>;
 }
+
+export default function CalculationScreen({ navigation }: IPageProps) {
+  return (
+    <View style={styles.container}>
+      <Text>Home Screen</Text>
+      <Button title="History" onPress={() => navigation.navigate('History')} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+});
