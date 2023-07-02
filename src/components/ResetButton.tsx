@@ -18,7 +18,6 @@ export default function ResetButton({ value, handlePress }: IProps) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'red',
-    margin: 10,
     width: 80,
     height: 100,
     display: 'flex',

@@ -18,7 +18,6 @@ export default function NumButton({ value, handlePress }: IProps) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'gray',
-    margin: 10,
     width: 80,
     height: 100,
     display: 'flex',

@@ -19,7 +19,6 @@ export default function OperationButton({ value, handlePress }: IProps) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'blue',
-    margin: 10,
     width: 80,
     height: 100,
     display: 'flex',
