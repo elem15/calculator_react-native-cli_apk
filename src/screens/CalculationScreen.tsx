@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { ParamListBase } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,9 +14,10 @@ interface ISavedNumber {
   number: string;
   operation: Operations;
 }
-export default function CalculationScreen() {
+export default function CalculationScreen({ navigation }: IPageProps) {
   const [currentNumber, setCurrentNumber] = useState('0');
   const [savedNumbers, setSavedNumbers] = useState<ISavedNumber[]>([]);
+  const [history, setHistory] = useState<string[]>([]);
   const [compute, setCompute] = useState(false);
   const reset = () => {
     setCurrentNumber('0');
@@ -68,9 +69,13 @@ export default function CalculationScreen() {
         return acc;
       }, 0);
       setSavedNumbers([]);
-      const numberOrError = String(Number(result.toFixed(15)));
+      const numberToString = String(Number(result.toFixed(7)));
+      const historyEl = savedNumbersToString + numberToString;
+      setHistory([...history, historyEl]);
       setCurrentNumber(
-        numberOrError.length > 10 ? 'Error! Too long number' : numberOrError,
+        Number(numberToString).toFixed(1).length > 10
+          ? 'Error! Too long number'
+          : numberToString,
       );
     };
     if (compute) {
@@ -79,18 +84,27 @@ export default function CalculationScreen() {
     setCompute(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [compute]);
+
+  const savedNumbersToString = useMemo(
+    () =>
+      savedNumbers.length &&
+      savedNumbers.reduce(
+        (acc, item) => acc + item.number + item.operation,
+        '',
+      ),
+    [savedNumbers],
+  );
+
   return (
     <View style={styles.container}>
+      <Button
+        title="History"
+        onPress={() =>
+          navigation.navigate('History', { history: history.join('\n') })
+        }
+      />
       <View style={styles.history}>
-        <Text style={styles.historyText}>
-          {savedNumbers.length &&
-            savedNumbers.map((item, idx) => (
-              <Text key={idx}>
-                {item.number}
-                {item.operation}
-              </Text>
-            ))}
-        </Text>
+        <Text style={styles.historyText}>{savedNumbersToString}</Text>
       </View>
       <View style={styles.screen}>
         <Text style={styles.screenText}>{currentNumber}</Text>
