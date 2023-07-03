@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { ParamListBase } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -17,7 +17,11 @@ interface ISavedNumber {
 export default function CalculationScreen() {
   const [currentNumber, setCurrentNumber] = useState('0');
   const [savedNumbers, setSavedNumbers] = useState<ISavedNumber[]>([]);
-
+  const [compute, setCompute] = useState(false);
+  const reset = () => {
+    setCurrentNumber('0');
+    setSavedNumbers([]);
+  };
   const addNumberToScreen = (num: string) => {
     if (currentNumber === '0') {
       setCurrentNumber(num);
@@ -36,6 +40,38 @@ export default function CalculationScreen() {
     });
     setCurrentNumber('0');
   };
+  useEffect(() => {
+    const setResult = async () => {
+      let operand = '+';
+      const result = savedNumbers.reduce((acc, item) => {
+        switch (operand) {
+          case '+':
+            acc += +item.number;
+            break;
+          case '-':
+            acc -= +item.number;
+            break;
+          case '*':
+            acc *= +item.number;
+            break;
+          case '/':
+            acc /= +item.number;
+            break;
+          default:
+            break;
+        }
+        operand = item.operation;
+        return acc;
+      }, 0);
+      setSavedNumbers([]);
+      setCurrentNumber(String(result));
+    };
+    if (compute) {
+      setResult();
+    }
+    setCompute(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [compute]);
   return (
     <View style={styles.container}>
       <View style={styles.history}>
@@ -97,7 +133,12 @@ export default function CalculationScreen() {
             addNumberToScreen('6');
           }}
         />
-        <OperationButton value={Operations.minus} handlePress={() => { }} />
+        <OperationButton
+          value={Operations.minus}
+          handlePress={() => {
+            savePrevNumber(Operations.minus);
+          }}
+        />
       </View>
       <View style={styles.row}>
         <NumButton
@@ -118,23 +159,34 @@ export default function CalculationScreen() {
             addNumberToScreen('9');
           }}
         />
-        <OperationButton value={Operations.multiply} handlePress={() => { }} />
-      </View>
-      <View style={styles.row}>
-        <ResetButton
-          value={'C'}
+        <OperationButton
+          value={Operations.multiply}
           handlePress={() => {
-            setCurrentNumber('0');
+            savePrevNumber(Operations.multiply);
           }}
         />
+      </View>
+      <View style={styles.row}>
+        <ResetButton value={'C'} handlePress={reset} />
         <NumButton
           value="0"
           handlePress={() => {
             addNumberToScreen('0');
           }}
         />
-        <OperationButton value={Operations.equals} handlePress={() => { }} />
-        <OperationButton value={Operations.divide} handlePress={() => { }} />
+        <OperationButton
+          value={Operations.equals}
+          handlePress={() => {
+            savePrevNumber(Operations.equals);
+            setCompute(true);
+          }}
+        />
+        <OperationButton
+          value={Operations.divide}
+          handlePress={() => {
+            savePrevNumber(Operations.divide);
+          }}
+        />
       </View>
     </View>
   );
