@@ -23,7 +23,7 @@ export default function CalculationScreen() {
     setSavedNumbers([]);
   };
   const addNumberToScreen = (num: string) => {
-    if (currentNumber === '0') {
+    if (currentNumber === '0' || currentNumber === 'Error! Too long number') {
       setCurrentNumber(num);
     } else if (currentNumber.length < 10) {
       setCurrentNumber(prev => prev + num);
@@ -31,6 +31,10 @@ export default function CalculationScreen() {
   };
 
   const savePrevNumber = (operand: Operations) => {
+    if (currentNumber === 'Error! Too long number') {
+      reset();
+      return;
+    }
     const prevNumber: ISavedNumber = {
       number: currentNumber,
       operation: operand,
@@ -64,7 +68,10 @@ export default function CalculationScreen() {
         return acc;
       }, 0);
       setSavedNumbers([]);
-      setCurrentNumber(String(result));
+      const numberOrError = String(Number(result.toFixed(15)));
+      setCurrentNumber(
+        numberOrError.length > 10 ? 'Error! Too long number' : numberOrError,
+      );
     };
     if (compute) {
       setResult();
