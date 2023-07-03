@@ -29,5 +29,6 @@ const styles = StyleSheet.create({
   },
   historyText: {
     fontSize: 20,
+    color: 'black',
   },
 });

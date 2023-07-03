@@ -233,13 +233,13 @@ const styles = StyleSheet.create({
     width: '90%',
     height: 80,
     display: 'flex',
-    justifyContent: 'flex-end',
     alignItems: 'flex-end',
     borderRadius: 10,
     padding: 10,
   },
   screenText: {
-    fontSize: 50,
+    fontSize: 40,
+    color: 'black',
   },
   history: {
     color: 'black',
@@ -253,5 +253,6 @@ const styles = StyleSheet.create({
   },
   historyText: {
     fontSize: 30,
+    color: 'black',
   },
 });
