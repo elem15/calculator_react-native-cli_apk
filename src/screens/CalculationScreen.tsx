@@ -1,30 +1,31 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import { ParamListBase } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useEffect, useMemo, useState, useContext } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import NumButton from '../components/NumButton';
 import OperationButton from '../components/OperationButton';
 import ResetButton from '../components/ResetButton';
 import { Operations } from '../components/types';
+import { HistoryContext } from '../../App';
 
-interface IPageProps {
-  navigation: NativeStackNavigationProp<ParamListBase, 'History'>;
-}
 interface ISavedNumber {
   number: string;
   operation: Operations;
 }
-export default function CalculationScreen({ navigation }: IPageProps) {
+
+export default function CalculationScreen() {
   const [currentNumber, setCurrentNumber] = useState('0');
   const [savedNumbers, setSavedNumbers] = useState<ISavedNumber[]>([]);
-  const [history, setHistory] = useState<string[]>([]);
+  const { history, setHistory } = useContext(HistoryContext);
   const [compute, setCompute] = useState(false);
   const reset = () => {
     setCurrentNumber('0');
     setSavedNumbers([]);
   };
   const addNumberToScreen = (num: string) => {
-    if (currentNumber === '0' || currentNumber === 'Error! Too long number') {
+    if (
+      currentNumber === '0' ||
+      currentNumber === 'Error! Too long number' ||
+      currentNumber === 'Infinity'
+    ) {
       setCurrentNumber(num);
     } else if (currentNumber.length < 10) {
       setCurrentNumber(prev => prev + num);
@@ -32,7 +33,10 @@ export default function CalculationScreen({ navigation }: IPageProps) {
   };
 
   const savePrevNumber = (operand: Operations) => {
-    if (currentNumber === 'Error! Too long number') {
+    if (
+      currentNumber === 'Error! Too long number' ||
+      currentNumber === 'Infinity'
+    ) {
       reset();
       return;
     }
@@ -97,12 +101,6 @@ export default function CalculationScreen({ navigation }: IPageProps) {
 
   return (
     <View style={styles.container}>
-      <Button
-        title="History"
-        onPress={() =>
-          navigation.navigate('History', { history: history.join('\n') })
-        }
-      />
       <View style={styles.history}>
         <Text style={styles.historyText}>{savedNumbersToString}</Text>
       </View>
