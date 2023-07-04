@@ -12,21 +12,26 @@ interface ISavedNumber {
 }
 
 export default function CalculationScreen() {
-  const [currentNumber, setCurrentNumber] = useState('0');
+  const [currentNumber, setCurrentNumber] = useState('');
   const [savedNumbers, setSavedNumbers] = useState<ISavedNumber[]>([]);
   const { history, setHistory } = useContext(HistoryContext);
   const [compute, setCompute] = useState(false);
+  const [resultCompute, setResultCompute] = useState(false);
   const reset = () => {
-    setCurrentNumber('0');
+    setCurrentNumber('');
     setSavedNumbers([]);
+    setCompute(false);
   };
   const addNumberToScreen = (num: string) => {
     if (
+      currentNumber === '' ||
       currentNumber === '0' ||
       currentNumber === 'Error! Too long number' ||
-      currentNumber === 'Infinity'
+      currentNumber === 'Infinity' ||
+      compute
     ) {
       setCurrentNumber(num);
+      setCompute(false);
     } else if (currentNumber.length < 10) {
       setCurrentNumber(prev => prev + num);
     }
@@ -47,24 +52,27 @@ export default function CalculationScreen() {
     setSavedNumbers(saved => {
       return [...saved, prevNumber];
     });
-    setCurrentNumber('0');
+    setCurrentNumber('');
+    setCompute(true);
   };
   useEffect(() => {
+    const numbers = savedNumbers;
+    setSavedNumbers([]);
     const setResult = async () => {
       let operand = '+';
-      const result = savedNumbers.reduce((acc, item) => {
+      const result = numbers.reduce((acc, item) => {
         switch (operand) {
           case '+':
-            acc += +item.number;
+            acc += Number(item.number);
             break;
           case '-':
-            acc -= +item.number;
+            acc -= Number(item.number);
             break;
           case '*':
-            acc *= +item.number;
+            acc *= Number(item.number);
             break;
           case '/':
-            acc /= +item.number;
+            acc /= Number(item.number);
             break;
           default:
             break;
@@ -72,7 +80,6 @@ export default function CalculationScreen() {
         operand = item.operation;
         return acc;
       }, 0);
-      setSavedNumbers([]);
       const numberToString = String(Number(result.toFixed(7)));
       const historyEl = savedNumbersToString + numberToString;
       setHistory([...history, historyEl]);
@@ -82,27 +89,33 @@ export default function CalculationScreen() {
           : numberToString,
       );
     };
-    if (compute) {
+    if (resultCompute) {
       setResult();
     }
-    setCompute(false);
+    setResultCompute(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [compute]);
+  }, [resultCompute]);
 
   const savedNumbersToString = useMemo(
     () =>
-      savedNumbers.length &&
-      savedNumbers.reduce(
-        (acc, item) => acc + item.number + item.operation,
-        '',
-      ),
+      savedNumbers.length > 0
+        ? savedNumbers.reduce(
+          (acc, item) => `${acc}${item.number}${item.operation}`,
+          '',
+        )
+        : '',
     [savedNumbers],
   );
-
   return (
     <View style={styles.container}>
       <View style={styles.history}>
-        <Text style={styles.historyText}>{savedNumbersToString}</Text>
+        <Text
+          style={
+            !resultCompute ? styles.historyText : styles.historyTextInvisible
+          }>
+          {savedNumbersToString}
+          {currentNumber}
+        </Text>
       </View>
       <View style={styles.screen}>
         <Text style={styles.screenText}>{currentNumber}</Text>
@@ -197,7 +210,7 @@ export default function CalculationScreen() {
           value={Operations.equals}
           handlePress={() => {
             savePrevNumber(Operations.equals);
-            setCompute(true);
+            setResultCompute(true);
           }}
         />
         <OperationButton
@@ -254,5 +267,8 @@ const styles = StyleSheet.create({
   historyText: {
     fontSize: 30,
     color: 'black',
+  },
+  historyTextInvisible: {
+    display: 'none',
   },
 });
