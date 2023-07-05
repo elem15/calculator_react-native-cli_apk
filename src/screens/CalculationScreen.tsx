@@ -100,9 +100,9 @@ export default function CalculationScreen() {
     () =>
       savedNumbers.length > 0
         ? savedNumbers.reduce(
-          (acc, item) => `${acc}${item.number}${item.operation}`,
-          '',
-        )
+            (acc, item) => `${acc}${item.number}${item.operation}`,
+            '',
+          )
         : '',
     [savedNumbers],
   );
@@ -139,7 +139,8 @@ export default function CalculationScreen() {
             addNumberToScreen('3');
           }}
         />
-        <OperationButton
+        <NumButton
+          color="blue"
           value={Operations.plus}
           handlePress={() => {
             savePrevNumber(Operations.plus);
@@ -165,7 +166,8 @@ export default function CalculationScreen() {
             addNumberToScreen('6');
           }}
         />
-        <OperationButton
+        <NumButton
+          color="blue"
           value={Operations.minus}
           handlePress={() => {
             savePrevNumber(Operations.minus);
@@ -191,7 +193,8 @@ export default function CalculationScreen() {
             addNumberToScreen('9');
           }}
         />
-        <OperationButton
+        <NumButton
+          color="blue"
           value={Operations.multiply}
           handlePress={() => {
             savePrevNumber(Operations.multiply);
@@ -199,21 +202,23 @@ export default function CalculationScreen() {
         />
       </View>
       <View style={styles.row}>
-        <ResetButton value={'C'} handlePress={reset} />
+        <NumButton value={'C'} handlePress={reset} color="red" />
         <NumButton
           value="0"
           handlePress={() => {
             addNumberToScreen('0');
           }}
         />
-        <OperationButton
+        <NumButton
+          color="blue"
           value={Operations.equals}
           handlePress={() => {
             savePrevNumber(Operations.equals);
             setResultCompute(true);
           }}
         />
-        <OperationButton
+        <NumButton
+          color="blue"
           value={Operations.divide}
           handlePress={() => {
             savePrevNumber(Operations.divide);
@@ -228,10 +233,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     display: 'flex',
     flexDirection: 'column',
-    rowGap: 20,
+    rowGap: 25,
   },
   row: {
     display: 'flex',
