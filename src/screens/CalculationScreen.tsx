@@ -1,8 +1,6 @@
 import React, { useEffect, useMemo, useState, useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import NumButton from '../components/NumButton';
-import OperationButton from '../components/OperationButton';
-import ResetButton from '../components/ResetButton';
 import { Operations } from '../components/types';
 import { HistoryContext } from '../../App';
 
@@ -58,28 +56,47 @@ export default function CalculationScreen() {
   useEffect(() => {
     const numbers = savedNumbers;
     setSavedNumbers([]);
-    const setResult = async () => {
-      let operand = '+';
-      const result = numbers.reduce((acc, item) => {
-        switch (operand) {
-          case '+':
-            acc += Number(item.number);
-            break;
-          case '-':
-            acc -= Number(item.number);
-            break;
-          case '*':
-            acc *= Number(item.number);
-            break;
-          case '/':
-            acc /= Number(item.number);
-            break;
-          default:
-            break;
+    const calculate = (j: number) => {
+      let op = Number(numbers[j].number);
+      while (numbers[j].operation === '*' || numbers[j].operation === '/') {
+        if (numbers[j].operation === '*') {
+          op *= Number(numbers[j + 1].number);
+        } else if (numbers[j].operation === '/') {
+          op /= Number(numbers[j + 1].number);
         }
-        operand = item.operation;
-        return acc;
-      }, 0);
+        j++;
+      }
+      return [op, j];
+    };
+    const setResult = async () => {
+      let result = Number(numbers[0].number);
+      for (let i = 0; i < numbers.length - 1; i++) {
+        if (numbers[i].operation === '*') {
+          result *= Number(numbers[i + 1].number);
+        } else if (numbers[i].operation === '/') {
+          result /= Number(numbers[i + 1].number);
+        } else if (
+          numbers[i].operation === '+' &&
+          numbers[i + 1].operation !== '*' &&
+          numbers[i + 1].operation !== '/'
+        ) {
+          result += Number(numbers[i + 1].number);
+        } else if (
+          numbers[i].operation === '-' &&
+          numbers[i + 1].operation !== '*' &&
+          numbers[i + 1].operation !== '/'
+        ) {
+          result -= Number(numbers[i + 1].number);
+        } else if (numbers[i].operation === '-') {
+          const [op, j] = calculate(i + 1);
+          result -= op;
+          i = j;
+        } else if (numbers[i].operation === '+') {
+          const [op, j] = calculate(i + 1);
+          result += op;
+          i = j;
+        }
+      }
       const numberToString = String(Number(result.toFixed(7)));
       const historyEl = savedNumbersToString + numberToString;
       setHistory([...history, historyEl]);
