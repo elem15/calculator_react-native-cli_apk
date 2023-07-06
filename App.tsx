@@ -16,6 +16,7 @@ const Stack = createNativeStackNavigator();
 
 export const HistoryContext = React.createContext({
   history: [] as string[],
+  // eslint-disable-next-line prettier/prettier
   setHistory: (() => { }) as React.Dispatch<React.SetStateAction<string[]>>,
 });
 

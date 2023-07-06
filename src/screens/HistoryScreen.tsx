@@ -1,15 +1,8 @@
 import React, { useContext } from 'react';
-import { Button, StyleSheet, Text, View, ScrollView } from 'react-native';
-import { ParamListBase } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { HistoryContext } from '../../App';
 
-interface IPageProps {
-  navigation: NativeStackNavigationProp<ParamListBase, 'Calculation'>;
-  route: any;
-}
-
-export default function HistoryScreen({ navigation }: IPageProps) {
+export default function HistoryScreen() {
   const { history } = useContext(HistoryContext);
   return (
     <View style={styles.container}>
