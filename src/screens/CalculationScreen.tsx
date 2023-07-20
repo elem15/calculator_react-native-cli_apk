@@ -28,10 +28,22 @@ export default function CalculationScreen() {
       currentNumber === 'Infinity' ||
       compute
     ) {
-      setCurrentNumber(num);
-      setCompute(false);
+      if (num !== '<' && num !== '+/-') {
+        setCurrentNumber(num);
+        setCompute(false);
+      }
     } else if (currentNumber.length < 10) {
-      setCurrentNumber(prev => prev + num);
+      if (num === '<') {
+        setCurrentNumber(prev => prev.slice(0, prev.length - 1));
+      } else if (num === '+/-') {
+        if (currentNumber[0] === '-') {
+          setCurrentNumber(prev => prev.slice(1));
+        } else {
+          setCurrentNumber(prev => '-' + prev);
+        }
+      } else {
+        setCurrentNumber(prev => prev + num);
+      }
     }
   };
 
@@ -53,6 +65,7 @@ export default function CalculationScreen() {
     setCurrentNumber('');
     setCompute(true);
   };
+
   useEffect(() => {
     const numbers = savedNumbers;
     setSavedNumbers([]);
@@ -119,12 +132,13 @@ export default function CalculationScreen() {
     () =>
       savedNumbers.length > 0
         ? savedNumbers.reduce(
-            (acc, item) => `${acc}${item.number}${item.operation}`,
-            '',
-          )
+          (acc, item) => `${acc}${item.number}${item.operation}`,
+          '',
+        )
         : '',
     [savedNumbers],
   );
+
   return (
     <View style={styles.container}>
       <View style={styles.history}>
@@ -138,6 +152,22 @@ export default function CalculationScreen() {
       </View>
       <View style={styles.screen}>
         <Text style={styles.screenText}>{currentNumber}</Text>
+      </View>
+      <View style={styles.row}>
+        <NumButton value={'C'} handlePress={reset} color="red" />
+        <NumButton value={'AC'} handlePress={reset} color="red" />
+        <NumButton
+          value="+/-"
+          handlePress={() => {
+            addNumberToScreen('+/-');
+          }}
+        />
+        <NumButton
+          value="<"
+          handlePress={() => {
+            addNumberToScreen('<');
+          }}
+        />
       </View>
       <View style={styles.row}>
         <NumButton
@@ -221,7 +251,12 @@ export default function CalculationScreen() {
         />
       </View>
       <View style={styles.row}>
-        <NumButton value={'C'} handlePress={reset} color="red" />
+        <NumButton
+          value=","
+          handlePress={() => {
+            addNumberToScreen('.');
+          }}
+        />
         <NumButton
           value="0"
           handlePress={() => {
@@ -255,7 +290,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     display: 'flex',
     flexDirection: 'column',
-    rowGap: 25,
   },
   row: {
     display: 'flex',
@@ -275,7 +309,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   screenText: {
-    fontSize: 40,
+    fontSize: 35,
     color: 'black',
   },
   history: {
