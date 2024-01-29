@@ -22,15 +22,15 @@ export default function NumButton({
 
 const styles = StyleSheet.create({
   container: {
-    width: '17%',
+    width: 70,
     height: 70,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 45,
   },
   gray: {
-    backgroundColor: 'gray',
+    backgroundColor: 'darkgreen',
   },
   red: {
     backgroundColor: 'red',
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
   },
   textContent: {
-    fontSize: 40,
+    fontSize: 25,
     color: 'white',
   },
 });
